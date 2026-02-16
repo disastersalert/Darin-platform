@@ -1,4 +1,5 @@
 import { query } from '../config/database.js';
+import { intelligentUpsert } from './intelligence.js';
 
 /**
  * Get all events with filters, time range, and mode
@@ -67,20 +68,24 @@ export async function getEventById(id) {
 }
 
 /**
- * Create or update event
+ * Create or update event with intelligence layer
  */
 export async function upsertEvent(event) {
+  // Apply intelligence logic (scoring + deduplication)
+  const enrichedEvent = await intelligentUpsert(event);
+  
   const sql = `
     INSERT INTO events (
       id, title, title_ar, description, description_ar, 
       type, severity, country, country_ar,
       latitude, longitude, location,
       affected_people, casualties,
-      start_date, end_date, source, source_url, raw_data
+      start_date, end_date, source, source_url, raw_data,
+      confidence_score, priority_score, source_count
     ) VALUES (
       $1, $2, $3, $4, $5, $6, $7, $8, $9, $10::decimal, $11::decimal, 
       ST_SetSRID(ST_MakePoint($11::decimal, $10::decimal), 4326)::geography,
-      $12, $13, $14, $15, $16, $17, $18
+      $12, $13, $14, $15, $16, $17, $18, $19, $20, $21
     )
     ON CONFLICT (id) DO UPDATE SET
       title = EXCLUDED.title,
@@ -89,36 +94,42 @@ export async function upsertEvent(event) {
       affected_people = EXCLUDED.affected_people,
       casualties = EXCLUDED.casualties,
       end_date = EXCLUDED.end_date,
+      confidence_score = EXCLUDED.confidence_score,
+      priority_score = EXCLUDED.priority_score,
+      source_count = EXCLUDED.source_count,
       updated_at = NOW()
     RETURNING *
   `;
   
   const params = [
-    event.id,
-    event.title,
-    event.title_ar || null,
-    event.description || null,
-    event.description_ar || null,
-    event.type,
-    event.severity,
-    event.country || null,
-    event.country_ar || null,
-    event.latitude,
-    event.longitude,
-    event.affected_people || 0,
-    event.casualties || 0,
-    event.start_date,
-    event.end_date || null,
-    event.source,
-    event.source_url || null,
-    JSON.stringify(event.raw_data || {})
+    enrichedEvent.id,
+    enrichedEvent.title,
+    enrichedEvent.title_ar || null,
+    enrichedEvent.description || null,
+    enrichedEvent.description_ar || null,
+    enrichedEvent.type,
+    enrichedEvent.severity,
+    enrichedEvent.country || null,
+    enrichedEvent.country_ar || null,
+    enrichedEvent.latitude,
+    enrichedEvent.longitude,
+    enrichedEvent.affected_people || 0,
+    enrichedEvent.casualties || 0,
+    enrichedEvent.start_date,
+    enrichedEvent.end_date || null,
+    enrichedEvent.source,
+    enrichedEvent.source_url || null,
+    JSON.stringify(enrichedEvent.raw_data || {}),
+    enrichedEvent.confidence_score || 70,
+    enrichedEvent.priority_score || 50,
+    enrichedEvent.source_count || 1
   ];
   
   try {
     const result = await query(sql, params);
     return result.rows[0];
   } catch (error) {
-    console.error('Upsert error:', error.message, 'Event:', event.id);
+    console.error('Upsert error:', error.message, 'Event:', enrichedEvent.id);
     throw error;
   }
 }
