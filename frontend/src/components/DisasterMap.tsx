@@ -23,6 +23,8 @@ export default function DisasterMap({
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
 
+  console.log('DisasterMap render - events count:', events.length);
+
   useEffect(() => {
     // Only run on client side
     if (typeof window === 'undefined') return;
