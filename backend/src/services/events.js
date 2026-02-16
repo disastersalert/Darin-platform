@@ -88,10 +88,10 @@ export async function upsertEvent(event) {
     event.severity,
     event.country || null,
     event.country_ar || null,
-    event.latitude,
-    event.longitude,
-    event.affected_people || 0,
-    event.casualties || 0,
+    parseFloat(event.latitude),
+    parseFloat(event.longitude),
+    parseInt(event.affected_people) || 0,
+    parseInt(event.casualties) || 0,
     event.start_date,
     event.end_date || null,
     event.source,
@@ -99,8 +99,13 @@ export async function upsertEvent(event) {
     JSON.stringify(event.raw_data || {})
   ];
   
-  const result = await query(sql, params);
-  return result.rows[0];
+  try {
+    const result = await query(sql, params);
+    return result.rows[0];
+  } catch (error) {
+    console.error('Upsert error:', error.message, 'Event:', event.id);
+    throw error;
+  }
 }
 
 /**
