@@ -33,6 +33,9 @@ export default function Dashboard() {
   const loadData = async () => {
     try {
       setLoading(true);
+      console.log('=== LOADING EVENTS FROM API ===');
+      console.log('Filters:', filters);
+      
       const [eventsData, statsData] = await Promise.all([
         eventsApi.getEvents({
           type: filters.type || undefined,
@@ -42,8 +45,15 @@ export default function Dashboard() {
         }),
         statsApi.getStats(),
       ]);
+      
+      console.log('Events API response:', eventsData);
+      console.log('Events count:', eventsData.data.length);
+      console.log('First event sample:', eventsData.data[0]);
+      
       setEvents(eventsData.data);
       setStats(statsData.data);
+      
+      console.log('Events state updated with', eventsData.data.length, 'events');
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
