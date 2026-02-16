@@ -76,31 +76,31 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-50">
+    <div className="min-h-screen flex flex-col bg-[#0B0F19]">
       <Header />
       
       <main className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className="bg-white border-b border-gray-200 px-6 py-4">
+        <div className="bg-[#131826] border-b border-[#2A3441] px-6 py-3">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">
+              <h1 className="text-lg font-semibold text-gray-100">
                 {t('map.title')}
               </h1>
               {stats && (
-                <p className="text-sm text-gray-600 mt-1">
-                  {stats.total_events} {t('stats.totalEvents').toLowerCase()}
+                <p className="text-xs text-gray-500 mt-0.5 font-mono-tabular">
+                  <span className="text-gray-400 font-semibold">{stats.total_events}</span> {t('stats.totalEvents').toLowerCase()}
                 </p>
               )}
             </div>
             
-            <div className="flex gap-2">
+            <div className="flex gap-1.5">
               <button
                 onClick={() => setViewMode('map')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-1.5 text-xs font-medium transition-all duration-150 ${
                   viewMode === 'map'
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#3B82F6] text-white'
+                    : 'bg-[#1A2030] text-gray-400 hover:text-gray-300 hover:bg-[#1E2636] border border-[#2A3441]'
                 }`}
                 data-testid="map-view-btn"
               >
@@ -108,10 +108,10 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                className={`px-4 py-1.5 text-xs font-medium transition-all duration-150 ${
                   viewMode === 'list'
-                    ? 'bg-primary text-white'
-                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    ? 'bg-[#3B82F6] text-white'
+                    : 'bg-[#1A2030] text-gray-400 hover:text-gray-300 hover:bg-[#1E2636] border border-[#2A3441]'
                 }`}
                 data-testid="list-view-btn"
               >
@@ -121,10 +121,10 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - 65% map layout */}
         <div className="flex-1 flex overflow-hidden">
-          {/* Sidebar - Filters & Stats */}
-          <aside className="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+          {/* Sidebar - Compact */}
+          <aside className="w-72 bg-[#131826] border-r border-[#2A3441] overflow-y-auto">
             <FilterPanel
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -132,13 +132,13 @@ export default function Dashboard() {
             {stats && <StatsPanel stats={stats} />}
           </aside>
 
-          {/* Main View */}
+          {/* Main View - Map dominance */}
           <div className="flex-1 relative">
             {loading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-white">
+              <div className="absolute inset-0 flex items-center justify-center bg-[#0B0F19]">
                 <div className="text-center">
-                  <Loader2 className="w-12 h-12 animate-spin text-primary mx-auto" />
-                  <p className="mt-4 text-gray-600">{t('common.loading')}</p>
+                  <Loader2 className="w-10 h-10 animate-spin text-[#3B82F6] mx-auto" />
+                  <p className="mt-3 text-sm text-gray-500">{t('common.loading')}</p>
                 </div>
               </div>
             ) : viewMode === 'map' ? (
