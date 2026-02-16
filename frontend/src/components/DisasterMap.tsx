@@ -70,7 +70,12 @@ export default function DisasterMap({
   }, []);
 
   useEffect(() => {
-    if (!mapInstanceRef.current || typeof window === 'undefined') return;
+    if (!mapInstanceRef.current || typeof window === 'undefined') {
+      console.log('Markers useEffect skipped - map not ready or SSR');
+      console.log('mapInstanceRef.current:', !!mapInstanceRef.current);
+      console.log('typeof window:', typeof window);
+      return;
+    }
 
     const updateMarkers = async () => {
       const L = (await import('leaflet')).default;
