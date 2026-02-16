@@ -1,12 +1,9 @@
 import axios from 'axios';
-import xml2js from 'xml2js';
 import { config } from 'dotenv';
 
 config();
 
 const GDACS_BASE_URL = process.env.GDACS_API_BASE || 'https://www.gdacs.org/gdacsapi/api';
-
-const parser = new xml2js.Parser({ explicitArray: false });
 
 // Disaster type mapping
 const DISASTER_TYPES = {
@@ -44,18 +41,15 @@ export async function fetchGDACSEvents() {
       throw new Error('No data received from GDACS');
     }
 
-    // Parse XML response
-    const parsed = await parser.parseStringPromise(response.data);
+    // Parse JSON response (GeoJSON format)
+    const data = response.data;
     
-    if (!parsed.rss || !parsed.rss.channel || !parsed.rss.channel.item) {
+    if (!data.features || !Array.isArray(data.features)) {
+      console.log('No features found in GDACS response');
       return [];
     }
 
-    const items = Array.isArray(parsed.rss.channel.item) 
-      ? parsed.rss.channel.item 
-      : [parsed.rss.channel.item];
-
-    return items.map(normalizeEvent);
+    return data.features.map(normalizeEvent).filter(e => e !== null);
   } catch (error) {
     console.error('Error fetching GDACS events:', error.message);
     throw error;
@@ -65,32 +59,39 @@ export async function fetchGDACSEvents() {
 /**
  * Normalize GDACS event to our schema
  */
-function normalizeEvent(item) {
-  const gdacs = item['gdacs:'] || item.gdacs || {};
-  const geo = item['geo:Point'] || item.geo || {};
-  
-  const eventType = gdacs.eventtype || item.category || 'Unknown';
-  const alertLevel = gdacs.alertlevel || 'Green';
-  
-  const lat = parseFloat(geo.lat || gdacs.lat || 0);
-  const lon = parseFloat(geo.long || gdacs.lon || 0);
+function normalizeEvent(feature) {
+  try {
+    const props = feature.properties;
+    const coords = feature.geometry?.coordinates;
+    
+    if (!props || !coords) return null;
+    
+    const eventType = props.eventtype || 'Unknown';
+    const alertLevel = props.alertlevel || 'Green';
+    
+    const [lon, lat] = coords;
 
-  return {
-    id: gdacs.eventid || item.guid || generateId(),
-    title: item.title || 'Unknown Event',
-    description: item.description || '',
-    type: DISASTER_TYPES[eventType] || eventType,
-    severity: SEVERITY_MAP[alertLevel] || 'medium',
-    country: gdacs.country || 'Unknown',
-    latitude: lat,
-    longitude: lon,
-    affected_people: parseInt(gdacs.population || 0),
-    casualties: parseInt(gdacs.severity?.value || 0),
-    start_date: item.pubDate || new Date().toISOString(),
-    source: 'GDACS',
-    source_url: item.link || '',
-    raw_data: item
-  };
+    return {
+      id: `gdacs_${props.eventid}_${props.episodeid}`,
+      title: props.name || props.description || 'Unknown Event',
+      description: props.htmldescription || props.description || '',
+      type: DISASTER_TYPES[eventType] || eventType,
+      severity: SEVERITY_MAP[alertLevel] || 'medium',
+      country: props.country || 'Unknown',
+      latitude: lat,
+      longitude: lon,
+      affected_people: 0,
+      casualties: 0,
+      start_date: props.fromdate || new Date().toISOString(),
+      end_date: props.todate || null,
+      source: 'GDACS',
+      source_url: props.url?.report || '',
+      raw_data: props
+    };
+  } catch (error) {
+    console.error('Error normalizing event:', error.message);
+    return null;
+  }
 }
 
 /**
