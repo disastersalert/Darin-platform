@@ -32,7 +32,7 @@ export default function Header() {
               <p className="text-[9px] uppercase tracking-widest text-[#6B7280] font-semibold">
                 {isArabic
                   ? 'شبكة معلومات الكوارث والمخاطر'
-                  : 'Intelligence Platform'}
+                  : 'Disaster and Risk Information Network'}
               </p>
             </div>
           </div>
