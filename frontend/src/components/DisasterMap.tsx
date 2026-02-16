@@ -138,22 +138,25 @@ export default function DisasterMap({
         };
         const iconName = iconMap[event.type] || 'earthquake';
 
-        // Create custom icon with disaster type
+        // Create custom icon with disaster type and glow
         const icon = L.divIcon({
           className: 'custom-disaster-marker',
           html: `
-            <div class="gpu-accelerated" style="
+            <div class="gpu-accelerated marker-glow" style="
               position: relative;
-              width: 32px;
-              height: 32px;
+              width: 36px;
+              height: 36px;
             ">
               <div style="
                 position: absolute;
                 inset: 0;
                 background: ${color};
-                border: 2px solid rgba(255,255,255,0.9);
+                border: 2.5px solid rgba(255,255,255,0.95);
                 border-radius: 50%;
-                box-shadow: 0 2px 12px rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.1);
+                box-shadow: 
+                  0 0 20px ${color}80,
+                  0 4px 16px rgba(0,0,0,0.6),
+                  0 0 0 3px rgba(0,0,0,0.2);
               "></div>
               <div style="
                 position: absolute;
@@ -163,13 +166,13 @@ export default function DisasterMap({
                 justify-content: center;
               ">
                 <img src="/icons/${iconName}.svg" 
-                     style="width: 16px; height: 16px; filter: brightness(0) invert(1);"
+                     style="width: 18px; height: 18px; filter: brightness(0) invert(1);"
                      alt="${event.type}" />
               </div>
             </div>
           `,
-          iconSize: [32, 32],
-          iconAnchor: [16, 16],
+          iconSize: [36, 36],
+          iconAnchor: [18, 18],
         });
 
         try {
