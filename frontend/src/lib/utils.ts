@@ -37,7 +37,7 @@ export function getSeverityColor(severity: string): string {
 
 export function getMarkerColor(severity: string): string {
   const colors = {
-    critical: '#DC2626',
+    critical: '#EF4444',
     high: '#F59E0B',
     medium: '#10B981',
     low: '#3B82F6',
