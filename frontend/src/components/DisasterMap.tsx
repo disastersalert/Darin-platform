@@ -73,15 +73,33 @@ export default function DisasterMap({
     const updateMarkers = async () => {
       const L = (await import('leaflet')).default;
 
+      console.log('=== DARIN MAP DEBUG ===');
+      console.log('Total events received:', events.length);
+      console.log('Events data:', events);
+
       // Clear existing markers
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current = [];
 
       // Add new markers
-      events.forEach((event) => {
-        if (!event.latitude || !event.longitude) return;
+      let markersAdded = 0;
+      events.forEach((event, index) => {
+        console.log(`Event ${index}:`, {
+          id: event.id,
+          title: event.title,
+          lat: event.latitude,
+          lon: event.longitude,
+          hasLat: !!event.latitude,
+          hasLon: !!event.longitude,
+        });
+
+        if (!event.latitude || !event.longitude) {
+          console.warn(`Event ${event.id} missing coordinates`);
+          return;
+        }
 
         const color = getMarkerColor(event.severity);
+        console.log(`Creating marker for ${event.id} at [${event.latitude}, ${event.longitude}] with color ${color}`);
 
         // Create custom icon
         const icon = L.divIcon({
@@ -101,10 +119,14 @@ export default function DisasterMap({
           iconAnchor: [10, 10],
         });
 
-        const marker = L.marker([event.latitude, event.longitude], { icon })
-          .addTo(mapInstanceRef.current);
+        try {
+          const marker = L.marker([event.latitude, event.longitude], { icon })
+            .addTo(mapInstanceRef.current);
+          
+          markersAdded++;
+          console.log(`✓ Marker ${markersAdded} added successfully for ${event.id}`);
 
-        // Create popup content
+          // Create popup content
         const popupContent = `
           <div style="min-width: 250px; font-family: system-ui, sans-serif;">
             <div style="background: ${color}; color: white; padding: 8px 12px; margin: -10px -10px 10px; border-radius: 4px 4px 0 0;">
@@ -165,12 +187,17 @@ export default function DisasterMap({
           className: 'custom-popup',
         });
 
-        marker.on('click', () => {
-          onEventSelect(event);
-        });
+          marker.on('click', () => {
+            onEventSelect(event);
+          });
 
-        markersRef.current.push(marker);
+          markersRef.current.push(marker);
+        } catch (error) {
+          console.error(`Error adding marker for ${event.id}:`, error);
+        }
       });
+
+      console.log(`Total markers added to map: ${markersAdded}/${events.length}`);
 
       // Fit bounds if there are events
       if (events.length > 0) {
@@ -178,13 +205,22 @@ export default function DisasterMap({
           .filter((e) => e.latitude && e.longitude)
           .map((e) => [e.latitude, e.longitude] as [number, number]);
         
+        console.log('Bounds to fit:', bounds);
+        
         if (bounds.length > 0) {
-          mapInstanceRef.current.fitBounds(bounds, {
-            padding: [50, 50],
-            maxZoom: 6,
-          });
+          try {
+            mapInstanceRef.current.fitBounds(bounds, {
+              padding: [50, 50],
+              maxZoom: 6,
+            });
+            console.log('Map bounds fitted successfully');
+          } catch (error) {
+            console.error('Error fitting bounds:', error);
+          }
         }
       }
+      
+      console.log('=== END MAP DEBUG ===');
     };
 
     updateMarkers();
