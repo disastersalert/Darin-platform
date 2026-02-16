@@ -31,7 +31,7 @@ export async function fetchGDACSEvents() {
   try {
     const response = await axios.get(`${GDACS_BASE_URL}/events/geteventlist/SEARCH`, {
       params: {
-        fromDate: getDateDaysAgo(30), // Last 30 days
+        fromDate: getDateDaysAgo(365), // Expand to 1 year for complete disaster type coverage
         toDate: new Date().toISOString().split('T')[0]
       },
       timeout: 15000
