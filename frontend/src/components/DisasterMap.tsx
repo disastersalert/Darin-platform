@@ -125,22 +125,50 @@ export default function DisasterMap({
         const color = getMarkerColor(event.severity);
         console.log(`Creating marker for ${event.id} at [${event.latitude}, ${event.longitude}] with color ${color}`);
 
-        // Create custom icon
+        // Get disaster icon
+        const iconMap: Record<string, string> = {
+          'Earthquake': 'earthquake',
+          'Flood': 'flood',
+          'Wildfire': 'wildfire',
+          'Tropical Cyclone': 'cyclone',
+          'Drought': 'drought',
+          'Volcano': 'volcano',
+          'Tsunami': 'tsunami',
+        };
+        const iconName = iconMap[event.type] || 'earthquake';
+
+        // Create custom icon with disaster type
         const icon = L.divIcon({
-          className: 'custom-marker',
+          className: 'custom-disaster-marker',
           html: `
-            <div style="
-              width: 20px;
-              height: 20px;
-              background-color: ${color};
-              border: 3px solid white;
-              border-radius: 50%;
-              box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-              cursor: pointer;
-            "></div>
+            <div class="gpu-accelerated" style="
+              position: relative;
+              width: 32px;
+              height: 32px;
+            ">
+              <div style="
+                position: absolute;
+                inset: 0;
+                background: ${color};
+                border: 2px solid rgba(255,255,255,0.9);
+                border-radius: 50%;
+                box-shadow: 0 2px 12px rgba(0,0,0,0.4), 0 0 0 2px rgba(0,0,0,0.1);
+              "></div>
+              <div style="
+                position: absolute;
+                inset: 0;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+              ">
+                <img src="/icons/${iconName}.svg" 
+                     style="width: 16px; height: 16px; filter: brightness(0) invert(1);"
+                     alt="${event.type}" />
+              </div>
+            </div>
           `,
-          iconSize: [20, 20],
-          iconAnchor: [10, 10],
+          iconSize: [32, 32],
+          iconAnchor: [16, 16],
         });
 
         try {
