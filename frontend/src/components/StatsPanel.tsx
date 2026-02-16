@@ -15,16 +15,16 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
   const isArabic = locale === 'ar';
 
   return (
-    <div className="p-4 space-y-4" data-testid="stats-panel">
-      {/* Total Events */}
-      <div className="bg-[#1A2030] border border-[#2A3441] p-4">
-        <div className="flex items-center gap-2 mb-2">
-          <Globe className="w-4 h-4 text-gray-500" />
-          <h3 className="stat-label">
+    <div className="p-3 space-y-3" data-testid="stats-panel">
+      {/* Total Events - Enhanced with gradient */}
+      <div className="bg-gradient-to-br from-[#1E3A8A] to-[#1E40AF] border border-[#1F2937] p-3 glow-accent">
+        <div className="flex items-center gap-2 mb-1.5">
+          <Globe className="w-4 h-4 text-[#38BDF8]" />
+          <h3 className="stat-label text-[#E5E7EB]">
             {t('stats.totalEvents')}
           </h3>
         </div>
-        <p className="stat-value text-[#3B82F6]" data-testid="total-events-count">
+        <p className="stat-value text-white" data-testid="total-events-count">
           {stats.total_events}
         </p>
       </div>
@@ -32,40 +32,41 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
       {/* By Severity */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <AlertTriangle className="w-4 h-4 text-gray-500" />
-          <h3 className="stat-label">
+          <AlertTriangle className="w-4 h-4 text-[#6B7280]" />
+          <h3 className="stat-label text-[#9CA3AF]">
             {t('stats.bySeverity')}
           </h3>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {stats.by_severity.map((item) => (
-            <div key={item.severity} className="flex items-center gap-2 px-2 py-1.5 bg-[#1A2030] border border-[#2A3441]">
-              <div className={`w-2 h-2 rounded-sm ${getSeverityColor(item.severity)}`} />
-              <span className="text-xs text-gray-400 flex-1 uppercase tracking-wide">
+            <div key={item.severity} className="flex items-center gap-2 px-2 py-1.5 bg-[#1A1F2E] border border-[#1F2937] smooth-transition hover:border-[#374151]">
+              <div className={`w-2 h-2 ${getSeverityColor(item.severity)}`} style={{borderRadius: '2px'}} />
+              <span className="text-[10px] text-[#9CA3AF] flex-1 uppercase tracking-widest font-semibold">
                 {t(`severity.${item.severity}`)}
               </span>
-              <span className="text-xs font-semibold text-gray-300 font-mono-tabular">
+              <span className="text-xs font-bold text-[#E5E7EB] font-mono-tabular">
                 {item.count}
               </span>
             </div>
-          ))}</div>
+          ))}
+        </div>
       </div>
 
       {/* By Type */}
       <div>
         <div className="flex items-center gap-2 mb-2">
-          <BarChart3 className="w-4 h-4 text-gray-500" />
-          <h3 className="stat-label">
+          <BarChart3 className="w-4 h-4 text-[#6B7280]" />
+          <h3 className="stat-label text-[#9CA3AF]">
             {t('stats.byType')}
           </h3>
         </div>
-        <div className="space-y-1.5">
+        <div className="space-y-1">
           {stats.by_type.slice(0, 5).map((item) => (
-            <div key={item.type} className="flex items-center justify-between px-2 py-1 bg-[#1A2030]">
-              <span className="text-xs text-gray-400">
+            <div key={item.type} className="flex items-center justify-between px-2 py-1 bg-[#1A1F2E] smooth-transition hover:bg-[#1E2836]">
+              <span className="text-xs text-[#9CA3AF]">
                 {t(`eventTypes.${item.type}`)}
               </span>
-              <span className="text-xs font-semibold text-gray-300 font-mono-tabular">
+              <span className="text-xs font-bold text-[#E5E7EB] font-mono-tabular">
                 {item.count}
               </span>
             </div>
@@ -76,14 +77,14 @@ export default function StatsPanel({ stats }: StatsPanelProps) {
       {/* By Country */}
       {stats.by_country.length > 0 && (
         <div>
-          <h3 className="stat-label mb-2">
+          <h3 className="stat-label mb-2 text-[#9CA3AF]">
             {t('stats.byCountry')}
           </h3>
-          <div className="space-y-1.5">
+          <div className="space-y-1">
             {stats.by_country.slice(0, 5).map((item) => (
-              <div key={item.country} className="flex items-center justify-between px-2 py-1 bg-[#1A2030]">
-                <span className="text-xs text-gray-400 truncate">{item.country}</span>
-                <span className="text-xs font-semibold text-gray-300 font-mono-tabular ml-2">
+              <div key={item.country} className="flex items-center justify-between px-2 py-1 bg-[#1A1F2E] smooth-transition hover:bg-[#1E2836]">
+                <span className="text-xs text-[#9CA3AF] truncate">{item.country}</span>
+                <span className="text-xs font-bold text-[#E5E7EB] font-mono-tabular ml-2">
                   {item.count}
                 </span>
               </div>
