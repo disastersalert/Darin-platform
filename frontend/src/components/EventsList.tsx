@@ -17,62 +17,63 @@ export default function EventsList({ events, onEventSelect }: EventsListProps) {
 
   if (events.length === 0) {
     return (
-      <div className="flex items-center justify-center h-full bg-white">
-        <p className="text-gray-500">{t('map.noEvents')}</p>
+      <div className="flex items-center justify-center h-full bg-[#0A0F1C]">
+        <p className="text-[#9CA3AF]">{t('map.noEvents')}</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full overflow-y-auto bg-gray-50" data-testid="events-list">
-      <div className="p-6 space-y-4">
+    <div className="h-full overflow-y-auto bg-[#0A0F1C]" data-testid="events-list">
+      <div className="p-4 space-y-3">
         {events.map((event) => (
           <div
             key={event.id}
-            className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow cursor-pointer"
+            className="bg-[#111827] border border-[#1F2937] p-4 hover:border-[#374151] hover:bg-[#1A1F2E] transition-all duration-100 cursor-pointer"
             onClick={() => onEventSelect(event)}
             data-testid={`event-card-${event.id}`}
           >
-            <div className="flex items-start justify-between mb-3">
+            <div className="flex items-start justify-between mb-2">
               <div className="flex-1">
-                <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                <h3 className="text-base font-bold text-[#E5E7EB] mb-1">
                   {isArabic && event.title_ar ? event.title_ar : event.title}
                 </h3>
-                <div className="flex items-center gap-2 text-sm text-gray-600">
-                  <MapPin className="w-4 h-4" />
+                <div className="flex items-center gap-2 text-xs text-[#9CA3AF]">
+                  <MapPin className="w-3.5 h-3.5" />
                   <span>{event.country || 'Unknown'}</span>
                 </div>
               </div>
               <span
-                className={`px-3 py-1 rounded-full text-xs font-medium text-white ${getSeverityColor(
+                className={`px-2.5 py-1 text-[10px] font-bold text-white uppercase tracking-wider ${getSeverityColor(
                   event.severity
                 )}`}
                 data-testid={`event-severity-${event.id}`}
+                style={{borderRadius: '2px'}}
               >
                 {t(`severity.${event.severity}`)}
               </span>
             </div>
 
-            <div className="flex items-center gap-4 mb-3">
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+            <div className="flex items-center gap-3 mb-2.5">
+              <span className="inline-flex items-center px-2.5 py-1 bg-[#1A1F2E] border border-[#1F2937] text-[10px] font-semibold text-[#38BDF8] uppercase tracking-wider">
                 {t(`eventTypes.${event.type}`)}
               </span>
-              <span className="text-sm text-gray-500">
+              <span className="text-xs text-[#6B7280] font-mono-tabular">
                 {formatDate(event.start_date, locale)}
               </span>
             </div>
 
-            <div className="flex items-center gap-6 text-sm">
+            <div className="flex items-center gap-4 text-xs">
               {event.affected_people && event.affected_people > 0 && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Users className="w-4 h-4" />
-                  <span>{formatNumber(event.affected_people)}</span>
+                <div className="flex items-center gap-1.5 text-[#9CA3AF]">
+                  <Users className="w-3.5 h-3.5" />
+                  <span className="font-mono-tabular">{formatNumber(event.affected_people)}</span>
                 </div>
               )}
               {event.casualties && event.casualties > 0 && (
-                <div className="flex items-center gap-2 text-gray-600">
-                  <Skull className="w-4 h-4" />
-                  <span>{formatNumber(event.casualties)}</span>
+                <div className="flex items-center gap-1.5 text-[#9CA3AF]">
+                  <Skull className="w-3.5 h-3.5" />
+                  <span className="font-mono-tabular">{formatNumber(event.casualties)}</span>
                 </div>
               )}
             </div>
