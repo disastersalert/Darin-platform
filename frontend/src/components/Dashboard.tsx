@@ -76,31 +76,31 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0F19]">
+    <div className="min-h-screen flex flex-col bg-[#0A0F1C]">
       <Header />
       
       <main className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <div className="bg-[#131826] border-b border-[#2A3441] px-6 py-3">
+        <div className="bg-[#111827] border-b border-[#1F2937] px-6 py-2.5">
           <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-lg font-semibold text-gray-100">
+              <h1 className="text-lg font-bold text-[#E5E7EB] tracking-tight">
                 {t('map.title')}
               </h1>
               {stats && (
-                <p className="text-xs text-gray-500 mt-0.5 font-mono-tabular">
-                  <span className="text-gray-400 font-semibold">{stats.total_events}</span> {t('stats.totalEvents').toLowerCase()}
+                <p className="text-[10px] text-[#6B7280] mt-0.5 font-mono-tabular uppercase tracking-wider">
+                  <span className="text-[#38BDF8] font-bold">{stats.total_events}</span> {t('stats.totalEvents').toLowerCase()}
                 </p>
               )}
             </div>
             
-            <div className="flex gap-1.5">
+            <div className="flex gap-1">
               <button
                 onClick={() => setViewMode('map')}
-                className={`px-4 py-1.5 text-xs font-medium transition-all duration-150 ${
+                className={`px-4 py-1.5 text-xs font-bold transition-all duration-100 smooth-transition ${
                   viewMode === 'map'
-                    ? 'bg-[#3B82F6] text-white'
-                    : 'bg-[#1A2030] text-gray-400 hover:text-gray-300 hover:bg-[#1E2636] border border-[#2A3441]'
+                    ? 'bg-[#1E3A8A] text-white glow-accent'
+                    : 'bg-[#1A1F2E] text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-[#1E2836] border border-[#1F2937]'
                 }`}
                 data-testid="map-view-btn"
               >
@@ -108,10 +108,10 @@ export default function Dashboard() {
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`px-4 py-1.5 text-xs font-medium transition-all duration-150 ${
+                className={`px-4 py-1.5 text-xs font-bold transition-all duration-100 smooth-transition ${
                   viewMode === 'list'
-                    ? 'bg-[#3B82F6] text-white'
-                    : 'bg-[#1A2030] text-gray-400 hover:text-gray-300 hover:bg-[#1E2636] border border-[#2A3441]'
+                    ? 'bg-[#1E3A8A] text-white glow-accent'
+                    : 'bg-[#1A1F2E] text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-[#1E2836] border border-[#1F2937]'
                 }`}
                 data-testid="list-view-btn"
               >
@@ -124,7 +124,7 @@ export default function Dashboard() {
         {/* Main Content - 65% map layout */}
         <div className="flex-1 flex overflow-hidden">
           {/* Sidebar - Compact */}
-          <aside className="w-72 bg-[#131826] border-r border-[#2A3441] overflow-y-auto">
+          <aside className="w-72 bg-[#111827] border-r border-[#1F2937] overflow-y-auto">
             <FilterPanel
               filters={filters}
               onFilterChange={handleFilterChange}
@@ -135,10 +135,10 @@ export default function Dashboard() {
           {/* Main View - Map dominance */}
           <div className="flex-1 relative">
             {loading ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-[#0B0F19]">
+              <div className="absolute inset-0 flex items-center justify-center bg-[#0A0F1C]">
                 <div className="text-center">
-                  <Loader2 className="w-10 h-10 animate-spin text-[#3B82F6] mx-auto" />
-                  <p className="mt-3 text-sm text-gray-500">{t('common.loading')}</p>
+                  <Loader2 className="w-10 h-10 animate-spin text-[#38BDF8] mx-auto marker-glow" />
+                  <p className="mt-3 text-sm text-[#9CA3AF]">{t('common.loading')}</p>
                 </div>
               </div>
             ) : viewMode === 'map' ? (
