@@ -1,0 +1,33 @@
+/* Leaflet overrides for better styling */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  @apply rounded-lg shadow-xl;
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  min-width: 280px;
+}
+
+.leaflet-popup-close-button {
+  @apply text-gray-600 hover:text-gray-900;
+}
+
+/* Custom marker clusters */
+.marker-cluster {
+  background-color: rgba(30, 79, 161, 0.6);
+  border-radius: 50%;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+}
+
+.marker-cluster div {
+  background-color: rgba(30, 79, 161, 0.8);
+  border-radius: 50%;
+  text-align: center;
+  margin: 5px;
+}
