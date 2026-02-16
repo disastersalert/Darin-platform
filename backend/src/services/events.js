@@ -1,10 +1,13 @@
 import { query } from '../config/database.js';
 
 /**
- * Get all events with filters and time range
+ * Get all events with filters, time range, and mode
  */
 export async function getEvents(filters = {}) {
-  const { type, severity, country, timeRange = '24h', limit = 100, offset = 0 } = filters;
+  const { type, severity, country, mode = 'live', page = 1, limit = 25 } = filters;
+  
+  // Calculate offset for pagination
+  const offset = (page - 1) * limit;
   
   let sql = `
     SELECT 
@@ -13,7 +16,9 @@ export async function getEvents(filters = {}) {
       CAST(latitude AS DOUBLE PRECISION) as latitude, 
       CAST(longitude AS DOUBLE PRECISION) as longitude, 
       affected_people, casualties,
-      start_date, end_date, source, source_url, created_at, updated_at
+      start_date, end_date, source, source_url, 
+      confidence_score, priority_score, source_count,
+      created_at, updated_at
     FROM events
     WHERE 1=1
   `;
@@ -21,25 +26,9 @@ export async function getEvents(filters = {}) {
   const params = [];
   let paramCount = 1;
   
-  // Time range filter
-  if (timeRange && timeRange !== 'all') {
-    const timeRanges = {
-      '1h': 1 / 24,
-      '24h': 1,
-      '48h': 2,
-      '72h': 3,
-      '7d': 7,
-      '30d': 30,
-      '1y': 365,
-      'ytd': null // Year to date
-    };
-    
-    const days = timeRanges[timeRange];
-    if (days !== null && days !== undefined) {
-      sql += ` AND start_date >= NOW() - INTERVAL '${days} days'`;
-    } else if (timeRange === 'ytd') {
-      sql += ` AND start_date >= DATE_TRUNC('year', NOW())`;
-    }
+  // MODE ENFORCEMENT: live = 24h only, archive = all data
+  if (mode === 'live') {
+    sql += ` AND start_date >= NOW() - INTERVAL '24 hours'`;
   }
   
   if (type) {
@@ -57,7 +46,9 @@ export async function getEvents(filters = {}) {
     params.push(`%${country}%`);
   }
   
-  sql += ` ORDER BY start_date DESC LIMIT $${paramCount++} OFFSET $${paramCount}`;
+  // Sort: Newest → Oldest (mandatory)
+  sql += ` ORDER BY start_date DESC, priority_score DESC`;
+  sql += ` LIMIT $${paramCount++} OFFSET $${paramCount}`;
   params.push(limit, offset);
   
   const result = await query(sql, params);
@@ -133,34 +124,18 @@ export async function upsertEvent(event) {
 }
 
 /**
- * Get event count with time range support
+ * Get event count with mode support
  */
 export async function getEventCount(filters = {}) {
-  const { type, severity, country, timeRange = '24h' } = filters;
+  const { type, severity, country, mode = 'live' } = filters;
   
   let sql = 'SELECT COUNT(*) as count FROM events WHERE 1=1';
   const params = [];
   let paramCount = 1;
   
-  // Time range filter
-  if (timeRange && timeRange !== 'all') {
-    const timeRanges = {
-      '1h': 1 / 24,
-      '24h': 1,
-      '48h': 2,
-      '72h': 3,
-      '7d': 7,
-      '30d': 30,
-      '1y': 365,
-      'ytd': null
-    };
-    
-    const days = timeRanges[timeRange];
-    if (days !== null && days !== undefined) {
-      sql += ` AND start_date >= NOW() - INTERVAL '${days} days'`;
-    } else if (timeRange === 'ytd') {
-      sql += ` AND start_date >= DATE_TRUNC('year', NOW())`;
-    }
+  // MODE ENFORCEMENT
+  if (mode === 'live') {
+    sql += ` AND start_date >= NOW() - INTERVAL '24 hours'`;
   }
   
   if (type) {
