@@ -15,10 +15,13 @@ export function formatNumber(num: number | undefined): string {
 export function formatDate(date: string | undefined, locale: string = 'en'): string {
   if (!date) return '-';
   const d = new Date(date);
-  return d.toLocaleDateString(locale === 'ar' ? 'ar-SA' : 'en-US', {
+  
+  // Force Gregorian calendar for both languages
+  return d.toLocaleDateString(locale === 'ar' ? 'ar-EG' : 'en-US', {
     year: 'numeric',
     month: 'short',
     day: 'numeric',
+    calendar: 'gregory', // Explicitly use Gregorian calendar
   });
 }
 
