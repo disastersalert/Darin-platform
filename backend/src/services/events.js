@@ -9,7 +9,10 @@ export async function getEvents(filters = {}) {
   let sql = `
     SELECT 
       id, title, title_ar, description, type, severity, 
-      country, latitude, longitude, affected_people, casualties,
+      country, 
+      CAST(latitude AS DOUBLE PRECISION) as latitude, 
+      CAST(longitude AS DOUBLE PRECISION) as longitude, 
+      affected_people, casualties,
       start_date, end_date, source, source_url, created_at, updated_at
     FROM events
     WHERE 1=1
