@@ -176,7 +176,7 @@ export async function findDuplicateEvent(event) {
 }
 
 /**
- * Enhanced upsert with intelligence logic
+ * Enhanced upsert with strict intelligence logic
  */
 export async function intelligentUpsert(event) {
   try {
@@ -184,13 +184,44 @@ export async function intelligentUpsert(event) {
     const duplicates = await findDuplicateEvent(event);
     
     let sourceCount = 1;
+    let shouldMerge = false;
+    let mergeTargetId = null;
+    
     if (duplicates.length > 0) {
       console.log(`Found ${duplicates.length} potential duplicates for ${event.id}`);
-      // If near-exact match exists, increment source count instead of creating new
-      const nearMatch = duplicates.find(d => d.distance_meters < 50000); // 50km
-      if (nearMatch) {
-        sourceCount = (nearMatch.source_count || 1) + 1;
-        console.log(`Merging with existing event ${nearMatch.id}, source_count: ${sourceCount}`);
+      
+      // STRICT MERGE CONDITIONS - ALL must pass
+      for (const dup of duplicates) {
+        const dedupParams = getDeduplicationParams(event.type);
+        
+        // Condition 1: Distance check
+        const withinRadius = !dup.distance_meters || dup.distance_meters < dedupParams.radius;
+        
+        // Condition 2: Time difference check
+        const eventTime = new Date(event.start_date);
+        const dupTime = new Date(dup.start_date);
+        const hoursDiff = Math.abs(eventTime - dupTime) / (1000 * 60 * 60);
+        const withinTimeWindow = hoursDiff < (dedupParams.timeWindow * 24);
+        
+        // Condition 3: Type match (already filtered in query)
+        const sameType = dup.type === event.type;
+        
+        // Condition 4: Similarity score >= 85 (based on title similarity)
+        const titleSimilarity = calculateTitleSimilarity(event.title, dup.title);
+        const highConfidence = titleSimilarity >= 85;
+        
+        console.log(`  Duplicate check ${dup.id}: distance=${withinRadius}, time=${withinTimeWindow}, type=${sameType}, similarity=${titleSimilarity}`);
+        
+        // ALL conditions must pass for merge
+        if (withinRadius && withinTimeWindow && sameType && highConfidence) {
+          shouldMerge = true;
+          mergeTargetId = dup.id;
+          sourceCount = (dup.source_count || 1) + 1;
+          console.log(`  ✓ MERGE APPROVED: All conditions met for ${dup.id}`);
+          break;
+        } else {
+          console.log(`  ✗ MERGE REJECTED: Conditions not met, treating as new event`);
+        }
       }
     }
     
@@ -204,15 +235,39 @@ export async function intelligentUpsert(event) {
     event.confidence_score = confidenceScore;
     event.priority_score = priorityScore;
     event.source_count = sourceCount;
+    event.merge_target = mergeTargetId;
     
-    console.log(`Event ${event.id}: confidence=${confidenceScore}, priority=${priorityScore}, sources=${sourceCount}`);
+    console.log(`Event ${event.id}: confidence=${confidenceScore}, priority=${priorityScore}, sources=${sourceCount}, merge=${shouldMerge}`);
     
     return event;
     
   } catch (error) {
     console.error('Error in intelligent upsert:', error.message);
-    return event; // Return event without scores if calculation fails
+    return event;
   }
+}
+
+/**
+ * Calculate title similarity score (0-100)
+ */
+function calculateTitleSimilarity(title1, title2) {
+  if (!title1 || !title2) return 0;
+  
+  const t1 = title1.toLowerCase().trim();
+  const t2 = title2.toLowerCase().trim();
+  
+  // Exact match
+  if (t1 === t2) return 100;
+  
+  // Levenshtein-like simple comparison
+  const words1 = new Set(t1.split(/\s+/));
+  const words2 = new Set(t2.split(/\s+/));
+  
+  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const union = new Set([...words1, ...words2]);
+  
+  const similarity = (intersection.size / union.size) * 100;
+  return Math.round(similarity);
 }
 
 export default {
