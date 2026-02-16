@@ -1,50 +1,4 @@
 /*!********************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./src/styles/leaflet.css ***!
-  \********************************************************************************************************************************************************************************************************************************************************************/
-/* Leaflet overrides for better styling */
-.leaflet-container {
-  font-family: inherit;
-}
-
-.leaflet-popup-content-wrapper {
-  border-radius: 0.5rem;
-  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
-  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
-  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
-}
-
-.leaflet-popup-content {
-  margin: 0;
-  min-width: 280px;
-}
-
-.leaflet-popup-close-button {
-  --tw-text-opacity: 1;
-  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
-}
-
-.leaflet-popup-close-button:hover {
-  --tw-text-opacity: 1;
-  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
-}
-
-/* Custom marker clusters */
-.marker-cluster {
-  background-color: rgba(30, 79, 161, 0.6);
-  border-radius: 50%;
-  text-align: center;
-  color: white;
-  font-weight: 600;
-}
-
-.marker-cluster div {
-  background-color: rgba(30, 79, 161, 0.8);
-  border-radius: 50%;
-  text-align: center;
-  margin: 5px;
-}
-
-/*!********************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./src/styles/globals.css ***!
   \********************************************************************************************************************************************************************************************************************************************************************/
 *, ::before, ::after {
@@ -1203,5 +1157,51 @@ button:active:not(:disabled) {
   .md\:flex-row {
     flex-direction: row;
   }
+}
+
+/*!********************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[11].oneOf[12].use[3]!./src/styles/leaflet.css ***!
+  \********************************************************************************************************************************************************************************************************************************************************************/
+/* Leaflet overrides for better styling */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  border-radius: 0.5rem;
+  --tw-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --tw-shadow-colored: 0 20px 25px -5px var(--tw-shadow-color), 0 8px 10px -6px var(--tw-shadow-color);
+  box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
+}
+
+.leaflet-popup-content {
+  margin: 0;
+  min-width: 280px;
+}
+
+.leaflet-popup-close-button {
+  --tw-text-opacity: 1;
+  color: rgb(75 85 99 / var(--tw-text-opacity, 1));
+}
+
+.leaflet-popup-close-button:hover {
+  --tw-text-opacity: 1;
+  color: rgb(17 24 39 / var(--tw-text-opacity, 1));
+}
+
+/* Custom marker clusters */
+.marker-cluster {
+  background-color: rgba(30, 79, 161, 0.6);
+  border-radius: 50%;
+  text-align: center;
+  color: white;
+  font-weight: 600;
+}
+
+.marker-cluster div {
+  background-color: rgba(30, 79, 161, 0.8);
+  border-radius: 50%;
+  text-align: center;
+  margin: 5px;
 }
 
