@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import type { Event } from '@/lib/api';
 import { getMarkerColor, formatNumber, formatDate } from '@/lib/utils';
