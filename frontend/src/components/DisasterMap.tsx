@@ -22,8 +22,9 @@ export default function DisasterMap({
   const mapRef = useRef<any>(null);
   const mapInstanceRef = useRef<any>(null);
   const markersRef = useRef<any[]>([]);
+  const [mapReady, setMapReady] = useState(false);
 
-  console.log('DisasterMap render - events count:', events.length);
+  console.log('DisasterMap render - events count:', events.length, 'mapReady:', mapReady);
 
   useEffect(() => {
     // Only run on client side
@@ -66,6 +67,7 @@ export default function DisasterMap({
           }).addTo(map);
 
           mapInstanceRef.current = map;
+          setMapReady(true);
           console.log('✓ Map initialized successfully');
         }
       } catch (error) {
@@ -80,15 +82,15 @@ export default function DisasterMap({
         console.log('Cleaning up map instance');
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
+        setMapReady(false);
       }
     };
   }, []);
 
   useEffect(() => {
-    if (!mapInstanceRef.current || typeof window === 'undefined') {
+    if (!mapInstanceRef.current || typeof window === 'undefined' || !mapReady) {
       console.log('Markers useEffect skipped - map not ready or SSR');
-      console.log('mapInstanceRef.current:', !!mapInstanceRef.current);
-      console.log('typeof window:', typeof window);
+      console.log('mapInstanceRef.current:', !!mapInstanceRef.current, 'mapReady:', mapReady);
       return;
     }
 
@@ -246,7 +248,7 @@ export default function DisasterMap({
     };
 
     updateMarkers();
-  }, [events, t, locale, isArabic, onEventSelect]);
+  }, [events, t, locale, isArabic, onEventSelect, mapReady]);
 
   return (
     <div className="w-full h-full relative" data-testid="disaster-map">
