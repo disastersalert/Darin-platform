@@ -7,10 +7,10 @@ export default function Footer() {
   const locale = useLocale();
 
   return (
-    <footer className="bg-[#0B0F19] border-t border-[#2A3441] py-4" data-testid="footer">
+    <footer className="bg-[#0A0F1C] border-t border-[#1F2937] py-3" data-testid="footer">
       <div className="px-6">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-3">
-          <div className="text-xs text-gray-500">
+        <div className="flex flex-col md:flex-row items-center justify-between gap-2">
+          <div className="text-[10px] text-[#6B7280] uppercase tracking-wider">
             Data Source: GDACS
           </div>
           
@@ -19,14 +19,14 @@ export default function Footer() {
               href="https://x.com/DisastersAlert"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-gray-500 hover:text-gray-300 transition-colors"
+              className="text-[#9CA3AF] hover:text-[#38BDF8] transition-colors"
               data-testid="x-link"
             >
-              X (formerly Twitter)
+              X
             </a>
             <a
               href="mailto:Disasters@mail.com"
-              className="text-gray-500 hover:text-gray-300 transition-colors"
+              className="text-[#9CA3AF] hover:text-[#38BDF8] transition-colors"
               data-testid="contact-link"
             >
               {t('footer.contact')}
