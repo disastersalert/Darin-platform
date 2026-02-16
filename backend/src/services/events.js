@@ -63,8 +63,8 @@ export async function upsertEvent(event) {
       affected_people, casualties,
       start_date, end_date, source, source_url, raw_data
     ) VALUES (
-      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, 
-      ST_SetSRID(ST_MakePoint($11, $10), 4326)::geography,
+      $1, $2, $3, $4, $5, $6, $7, $8, $9, $10::decimal, $11::decimal, 
+      ST_SetSRID(ST_MakePoint($11::decimal, $10::decimal), 4326)::geography,
       $12, $13, $14, $15, $16, $17, $18
     )
     ON CONFLICT (id) DO UPDATE SET
@@ -88,10 +88,10 @@ export async function upsertEvent(event) {
     event.severity,
     event.country || null,
     event.country_ar || null,
-    parseFloat(event.latitude),
-    parseFloat(event.longitude),
-    parseInt(event.affected_people) || 0,
-    parseInt(event.casualties) || 0,
+    event.latitude,
+    event.longitude,
+    event.affected_people || 0,
+    event.casualties || 0,
     event.start_date,
     event.end_date || null,
     event.source,
