@@ -1,10 +1,10 @@
 import { query } from '../config/database.js';
 
 /**
- * Get all events with filters
+ * Get all events with filters and time range
  */
 export async function getEvents(filters = {}) {
-  const { type, severity, country, limit = 100, offset = 0 } = filters;
+  const { type, severity, country, timeRange = '24h', limit = 100, offset = 0 } = filters;
   
   let sql = `
     SELECT 
@@ -20,6 +20,27 @@ export async function getEvents(filters = {}) {
   
   const params = [];
   let paramCount = 1;
+  
+  // Time range filter
+  if (timeRange && timeRange !== 'all') {
+    const timeRanges = {
+      '1h': 1 / 24,
+      '24h': 1,
+      '48h': 2,
+      '72h': 3,
+      '7d': 7,
+      '30d': 30,
+      '1y': 365,
+      'ytd': null // Year to date
+    };
+    
+    const days = timeRanges[timeRange];
+    if (days !== null && days !== undefined) {
+      sql += ` AND start_date >= NOW() - INTERVAL '${days} days'`;
+    } else if (timeRange === 'ytd') {
+      sql += ` AND start_date >= DATE_TRUNC('year', NOW())`;
+    }
+  }
   
   if (type) {
     sql += ` AND type = $${paramCount++}`;
@@ -112,14 +133,35 @@ export async function upsertEvent(event) {
 }
 
 /**
- * Get event count
+ * Get event count with time range support
  */
 export async function getEventCount(filters = {}) {
-  const { type, severity, country } = filters;
+  const { type, severity, country, timeRange = '24h' } = filters;
   
   let sql = 'SELECT COUNT(*) as count FROM events WHERE 1=1';
   const params = [];
   let paramCount = 1;
+  
+  // Time range filter
+  if (timeRange && timeRange !== 'all') {
+    const timeRanges = {
+      '1h': 1 / 24,
+      '24h': 1,
+      '48h': 2,
+      '72h': 3,
+      '7d': 7,
+      '30d': 30,
+      '1y': 365,
+      'ytd': null
+    };
+    
+    const days = timeRanges[timeRange];
+    if (days !== null && days !== undefined) {
+      sql += ` AND start_date >= NOW() - INTERVAL '${days} days'`;
+    } else if (timeRange === 'ytd') {
+      sql += ` AND start_date >= DATE_TRUNC('year', NOW())`;
+    }
+  }
   
   if (type) {
     sql += ` AND type = $${paramCount++}`;
