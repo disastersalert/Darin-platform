@@ -9,7 +9,22 @@
 }
 
 body {
-  @apply bg-background text-text-dark;
+  @apply bg-[#0B0F19] text-gray-100;
+  font-feature-settings: 'tnum' on, 'lnum' on;
+}
+
+/* Intelligence-grade color palette */
+:root {
+  --bg-primary: #0B0F19;
+  --bg-secondary: #131826;
+  --bg-tertiary: #1A2030;
+  --border-subtle: #2A3441;
+  --border-default: #374151;
+  --text-primary: #F3F4F6;
+  --text-secondary: #9CA3AF;
+  --text-muted: #6B7280;
+  --accent-primary: #3B82F6;
+  --accent-danger: #EF4444;
 }
 
 /* RTL Support */
@@ -24,53 +39,43 @@ body {
 
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100;
+  @apply bg-[#131826];
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  @apply bg-[#374151] rounded-sm;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  @apply bg-[#4B5563];
 }
 
-/* Animations */
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Typography */
+.font-mono-tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' on;
 }
 
-.animate-fade-in {
-  animation: fadeIn 0.3s ease-in-out;
-}
-
-/* Severity Colors */
+/* Severity Colors - Keep unchanged */
 .severity-critical {
-  @apply bg-severity-critical text-white;
+  @apply bg-[#DC2626] text-white;
 }
 
 .severity-high {
-  @apply bg-severity-high text-white;
+  @apply bg-[#F59E0B] text-white;
 }
 
 .severity-medium {
-  @apply bg-severity-medium text-white;
+  @apply bg-[#10B981] text-white;
 }
 
 .severity-low {
-  @apply bg-severity-low text-white;
+  @apply bg-[#3B82F6] text-white;
 }
 
 /* Map Container */
@@ -78,4 +83,44 @@ body {
   width: 100%;
   height: 100%;
   position: relative;
+}
+
+/* Intelligence-grade panels */
+.intelligence-panel {
+  @apply bg-[#131826] border border-[#2A3441];
+}
+
+.intelligence-card {
+  @apply bg-[#1A2030] border border-[#2A3441] transition-all duration-150;
+}
+
+.intelligence-card:hover {
+  @apply border-[#374151] bg-[#1E2636];
+}
+
+/* Stat display */
+.stat-label {
+  @apply text-[10px] uppercase tracking-wider text-gray-500 font-medium;
+  letter-spacing: 0.08em;
+}
+
+.stat-value {
+  @apply text-2xl font-semibold text-gray-100 font-mono-tabular;
+}
+
+/* Grid alignment helper */
+.grid-align {
+  display: grid;
+  gap: 0.75rem;
+}
+
+/* Performance optimizations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  will-change: transform;
+}
+
+/* Smooth transitions */
+.smooth-transition {
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
