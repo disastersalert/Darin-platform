@@ -103,18 +103,22 @@ export async function findDuplicateEvent(event) {
   try {
     // SPECIAL CASE: Earthquakes use exact ID matching (source + external_id)
     if (event.type === 'Earthquake') {
-      console.log(`Earthquake dedup: checking by ID only`);
+      console.log(`Earthquake dedup: checking by source + ID`);
       const sql = `
         SELECT id, title, type, severity, source, latitude, longitude, 
                start_date, source_count
         FROM events
-        WHERE id = $1
+        WHERE source = $1
+        AND id = $2
         LIMIT 1
       `;
-      const result = await query(sql, [event.id]);
+      
+      const result = await query(sql, [event.source, event.id]);
+      
       if (result.rows.length > 0) {
-        console.log(`Found exact earthquake match: ${result.rows[0].id}`);
+        console.log(`Exact earthquake duplicate found: ${result.rows[0].id}`);
       }
+      
       return result.rows;
     }
     
