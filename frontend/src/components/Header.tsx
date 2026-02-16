@@ -10,8 +10,8 @@ export default function Header() {
   const isArabic = locale === 'ar';
 
   return (
-    <header className="bg-[#0B0F19] border-b border-[#2A3441] shadow-lg" data-testid="header">
-      <div className="px-6 py-3">
+    <header className="bg-[#0A0F1C] border-b border-[#1F2937] shadow-lg" data-testid="header">
+      <div className="px-6 py-2.5">
         <div className="flex items-center justify-between">
           {/* Logo & Title */}
           <div className={`flex items-center gap-3 ${isArabic ? 'flex-row-reverse' : ''}`}>
@@ -26,26 +26,27 @@ export default function Header() {
               />
             </div>
             <div className={isArabic ? 'text-right' : ''}>
-              <h1 className="text-xl font-bold tracking-tight text-gray-100">
+              <h1 className="text-xl font-bold tracking-tight text-[#E5E7EB]">
                 {isArabic ? 'دارين' : 'DARIN'}
               </h1>
-              <p className="text-[10px] uppercase tracking-wider text-gray-500 font-medium">
+              <p className="text-[9px] uppercase tracking-widest text-[#6B7280] font-semibold">
                 {isArabic
                   ? 'شبكة معلومات الكوارث والمخاطر'
-                  : 'Intelligence Platform'}</p>
+                  : 'Intelligence Platform'}
+              </p>
             </div>
           </div>
 
           {/* Language Switcher */}
           <div className="flex items-center gap-2">
-            <Languages className="w-4 h-4 text-gray-500" />
-            <div className="flex gap-1 bg-[#131826] rounded border border-[#2A3441] p-0.5">
+            <Languages className="w-4 h-4 text-[#6B7280]" />
+            <div className="flex gap-0.5 bg-[#111827] rounded border border-[#1F2937] p-0.5">
               <Link
                 href="/en"
-                className={`px-3 py-1.5 rounded text-xs font-medium transition-all duration-150 ${
+                className={`px-3 py-1.5 rounded text-xs font-semibold transition-all duration-100 ${
                   locale === 'en'
-                    ? 'bg-[#3B82F6] text-white'
-                    : 'text-gray-400 hover:text-gray-300 hover:bg-[#1A2030]'
+                    ? 'bg-[#1E3A8A] text-white glow-accent'
+                    : 'text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-[#1A1F2E]'
                 }`}
                 data-testid="lang-en-btn"
               >
@@ -53,10 +54,10 @@ export default function Header() {
               </Link>
               <Link
                 href="/ar"
-                className={`px-3 py-1.5 rounded text-xs font-medium transition-all duration-150 ${
+                className={`px-3 py-1.5 rounded text-xs font-semibold transition-all duration-100 ${
                   locale === 'ar'
-                    ? 'bg-[#3B82F6] text-white'
-                    : 'text-gray-400 hover:text-gray-300 hover:bg-[#1A2030]'
+                    ? 'bg-[#1E3A8A] text-white glow-accent'
+                    : 'text-[#9CA3AF] hover:text-[#E5E7EB] hover:bg-[#1A1F2E]'
                 }`}
                 data-testid="lang-ar-btn"
               >
