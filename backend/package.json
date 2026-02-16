@@ -1,0 +1,23 @@
+{
+  "name": "darin-backend",
+  "version": "1.0.0",
+  "description": "DARIN - Disaster and Risk Information Network Backend",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": ["disaster", "gdacs", "crisis", "monitoring"],
+  "author": "DARIN Team",
+  "license": "MIT",
+  "dependencies": {
+    "fastify": "^4.26.0",
+    "@fastify/cors": "^9.0.1",
+    "pg": "^8.11.3",
+    "axios": "^1.6.7",
+    "node-cron": "^3.0.3",
+    "dotenv": "^16.4.1",
+    "xml2js": "^0.6.2"
+  }
+}
