@@ -27,35 +27,49 @@ export default function DisasterMap({
 
   useEffect(() => {
     // Only run on client side
-    if (typeof window === 'undefined') return;
+    if (typeof window === 'undefined') {
+      console.log('Map init skipped - SSR');
+      return;
+    }
+
+    console.log('Map initialization starting...');
 
     const initMap = async () => {
-      const L = (await import('leaflet')).default;
+      try {
+        const L = (await import('leaflet')).default;
+        console.log('Leaflet loaded successfully');
 
-      // Fix default marker icon issue
-      delete (L.Icon.Default.prototype as any)._getIconUrl;
-      L.Icon.Default.mergeOptions({
-        iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
-        iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
-        shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
-      });
-
-      if (!mapInstanceRef.current && mapRef.current) {
-        // Initialize map
-        const map = L.map(mapRef.current, {
-          center: [20, 0],
-          zoom: 2,
-          zoomControl: true,
-          attributionControl: true,
+        // Fix default marker icon issue
+        delete (L.Icon.Default.prototype as any)._getIconUrl;
+        L.Icon.Default.mergeOptions({
+          iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+          iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+          shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
         });
 
-        // Add OpenStreetMap tile layer
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-          attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-          maxZoom: 18,
-        }).addTo(map);
+        if (!mapInstanceRef.current && mapRef.current) {
+          console.log('Creating map instance...');
+          // Initialize map
+          const map = L.map(mapRef.current, {
+            center: [20, 0],
+            zoom: 2,
+            zoomControl: true,
+            attributionControl: true,
+          });
 
-        mapInstanceRef.current = map;
+          console.log('Map instance created');
+
+          // Add OpenStreetMap tile layer
+          L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            maxZoom: 18,
+          }).addTo(map);
+
+          mapInstanceRef.current = map;
+          console.log('✓ Map initialized successfully');
+        }
+      } catch (error) {
+        console.error('Error initializing map:', error);
       }
     };
 
@@ -63,6 +77,7 @@ export default function DisasterMap({
 
     return () => {
       if (mapInstanceRef.current) {
+        console.log('Cleaning up map instance');
         mapInstanceRef.current.remove();
         mapInstanceRef.current = null;
       }
