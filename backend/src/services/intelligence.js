@@ -79,19 +79,38 @@ export function calculatePriorityScore(event, confidenceScore) {
 }
 
 /**
- * Find potential duplicate events
+ * Get deduplication parameters based on event type
+ */
+function getDeduplicationParams(eventType) {
+  const params = {
+    'Earthquake': { radius: 50000, timeWindow: 1 },      // 50km, 24h
+    'Tsunami': { radius: 100000, timeWindow: 2 },        // 100km, 48h
+    'Flood': { radius: 150000, timeWindow: 7 },          // 150km, 7d
+    'Wildfire': { radius: 100000, timeWindow: 7 },       // 100km, 7d
+    'Tropical Cyclone': { radius: 300000, timeWindow: 7 }, // 300km, 7d
+    'Volcano': { radius: 50000, timeWindow: 14 },        // 50km, 14d
+    'Drought': { radius: 500000, timeWindow: 30 },       // 500km, 30d
+  };
+  
+  return params[eventType] || { radius: 100000, timeWindow: 7 }; // Default
+}
+
+/**
+ * Find potential duplicate events with adaptive parameters
  * Match by: coordinates (radius), time window, event type
  */
 export async function findDuplicateEvent(event) {
   try {
-    // Search for events within:
-    // - 100km radius
-    // - 7 day time window
-    // - Same event type category
+    const dedupParams = getDeduplicationParams(event.type);
+    const radiusMeters = dedupParams.radius;
+    const timeWindowDays = dedupParams.timeWindow;
+    
+    console.log(`Deduplication check for ${event.type}: radius=${radiusMeters/1000}km, window=${timeWindowDays}d`);
     
     const sql = `
       SELECT 
         id, title, type, severity, source, latitude, longitude, start_date,
+        source_count,
         ST_Distance(
           location,
           ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography
@@ -99,11 +118,11 @@ export async function findDuplicateEvent(event) {
       FROM events
       WHERE 
         type = $3
-        AND start_date BETWEEN $4::timestamp - INTERVAL '7 days' AND $4::timestamp + INTERVAL '7 days'
+        AND start_date BETWEEN $4::timestamp - INTERVAL '${timeWindowDays} days' AND $4::timestamp + INTERVAL '${timeWindowDays} days'
         AND ST_DWithin(
           location,
           ST_SetSRID(ST_MakePoint($1, $2), 4326)::geography,
-          100000
+          ${radiusMeters}
         )
         AND id != $5
       ORDER BY distance_meters ASC
@@ -119,6 +138,14 @@ export async function findDuplicateEvent(event) {
     ];
     
     const result = await query(sql, params);
+    
+    if (result.rows.length > 0) {
+      console.log(`Found ${result.rows.length} potential duplicates within ${radiusMeters/1000}km:`);
+      result.rows.forEach(dup => {
+        console.log(`  - ${dup.id}: ${(dup.distance_meters/1000).toFixed(1)}km away, sources=${dup.source_count}`);
+      });
+    }
+    
     return result.rows;
     
   } catch (error) {
