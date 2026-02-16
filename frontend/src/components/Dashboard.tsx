@@ -49,6 +49,12 @@ export default function Dashboard() {
       console.log('Events API response:', eventsData);
       console.log('Events count:', eventsData.data.length);
       console.log('First event sample:', eventsData.data[0]);
+      console.log('First event coordinates:', {
+        lat: eventsData.data[0]?.latitude,
+        lon: eventsData.data[0]?.longitude,
+        latType: typeof eventsData.data[0]?.latitude,
+        lonType: typeof eventsData.data[0]?.longitude
+      });
       
       setEvents(eventsData.data);
       setStats(statsData.data);
