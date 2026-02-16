@@ -42,6 +42,7 @@ export async function syncGDACSData() {
           [event.id]
         );
         
+        console.log(`Upserting event: ${event.id}`);
         await upsertEvent(event);
         
         if (existing.rows.length > 0) {
@@ -49,8 +50,9 @@ export async function syncGDACSData() {
         } else {
           created++;
         }
+        console.log(`Successfully upserted: ${event.id}`);
       } catch (err) {
-        console.error(`Error upserting event ${event.id}:`, err.message);
+        console.error(`Error upserting event ${event.id}:`, err.message, err.stack);
       }
     }
     
