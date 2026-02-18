@@ -1,62 +1,48 @@
-import Fastify from 'fastify';
-import cors from '@fastify/cors';
-import { config } from 'dotenv';
-import eventsRoutes from './routes/events.js';
-import statsRoutes from './routes/stats.js';
-import syncRoutes from './routes/sync.js';
-import { startSyncWorker } from './workers/gdacs-sync.js';
-import { dbConnect } from './config/database.js';
-
-config();
-
-const fastify = Fastify({
-  logger: true,
-  trustProxy: true
-});
-
-// CORS configuration
-await fastify.register(cors, {
-  origin: process.env.CORS_ORIGIN || '*',
-  credentials: true
-});
-
-// Health check
-fastify.get('/api/health', async (request, reply) => {
-  return { 
-    status: 'ok', 
-    service: 'DARIN Backend',
-    timestamp: new Date().toISOString() 
-  };
-});
-
-// Register routes
-fastify.register(eventsRoutes, { prefix: '/api/events' });
-fastify.register(statsRoutes, { prefix: '/api/stats' });
-fastify.register(syncRoutes, { prefix: '/api/sync' });
-
-// Start server
-const start = async () => {
+export const dbConnect = async () => {
+  const client = await pool.connect();
   try {
-    // Test database connection
-    await dbConnect();
-    fastify.log.info('✓ Database connected');
 
-    // Start server
-    await fastify.listen({ 
-      port: process.env.PORT || 8001, 
-      host: '0.0.0.0' 
-    });
-    
-    fastify.log.info(`✓ DARIN Backend running on port ${process.env.PORT || 8001}`);
-    
-    // Start GDACS sync worker
-    startSyncWorker();
-    fastify.log.info('✓ GDACS sync worker started');
-    
-  } catch (err) {
-    fastify.log.error(err);
-    process.exit(1);
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id SERIAL PRIMARY KEY,
+        username VARCHAR(100),
+        role VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS posts (
+        id SERIAL PRIMARY KEY,
+        title VARCHAR(255),
+        body TEXT,
+        user_id INTEGER REFERENCES users(id),
+        status VARCHAR(50),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS follows (
+        following_user_id INTEGER REFERENCES users(id),
+        followed_user_id INTEGER REFERENCES users(id),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      );
+    `);
+
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS sync_logs (
+        id SERIAL PRIMARY KEY,
+        message TEXT,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        sync_started_at TIMESTAMP
+      );
+    `);
+
+    const result = await client.query('SELECT NOW()');
+    return result.rows[0];
+
+  } finally {
+    client.release();
   }
 };
-
-start();
