@@ -23,11 +23,15 @@ await client.query(`
 
   CREATE TABLE IF NOT EXISTS sync_logs (
     id SERIAL PRIMARY KEY,
+    status VARCHAR(50),
     message TEXT,
+    sync_started_at TIMESTAMP,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
   );
 
   ALTER TABLE sync_logs
-  ADD COLUMN IF NOT EXISTS sync_started_at TIMESTAMP,
   ADD COLUMN IF NOT EXISTS status VARCHAR(50);
+
+  ALTER TABLE sync_logs
+  ADD COLUMN IF NOT EXISTS sync_started_at TIMESTAMP;
 `);
