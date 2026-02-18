@@ -26,7 +26,8 @@ export const query = async (text, params) => {
 
 export const dbConnect = async () => {
   const client = await pool.connect();
-  try {await client.query(`
+  try {
+    await client.query(`
 CREATE TABLE IF NOT EXISTS users (
   id SERIAL PRIMARY KEY,
   username VARCHAR(100),
@@ -54,7 +55,6 @@ CREATE TABLE IF NOT EXISTS sync_logs (
   message TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-`);
     const result = await client.query('SELECT NOW()');
     return result.rows[0];
   } finally {
